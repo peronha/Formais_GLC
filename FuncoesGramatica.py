@@ -127,5 +127,29 @@ def RemoveSimbolosInuteis(gramatica):
 
 
 def FormaNormalChomsky(gramatica):
+    gramatica = RemoveProducoesVazias(gramatica)
+    gramatica = RemoveProducoesUnitarias(gramatica)
+    gramatica = RemoveSimbolosInuteis(gramatica)
+
+    # Lista das novas variaveis que geram apenas um terminal no formato terminal => variavel
+    novas_variaveis_terminais = {}
+
+    for simbolo, producoes in gramatica.regras.items():
+        for prod in producoes:
+            if len(prod) > 1:
+                for c in prod:
+                    if c in gramatica.terminais:
+                        if c not in novas_variaveis_terminais:
+                            novas_variaveis_terminais[c] = 'G_' + c
+                        gramatica.regras[simbolo][gramatica.regras[simbolo].index(prod)] = prod.replace(c, novas_variaveis_terminais[c])
+
+    # Adiciona as novas variaveis e regras na gramatica
+    for terminal,variavel in novas_variaveis_terminais.items():
+        add_var = variavel
+        gramatica.adicionaVariavel(add_var)
+        gramatica.adicionaRegra(add_var, terminal)
+
+
+
 
     return gramatica

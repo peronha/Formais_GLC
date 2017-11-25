@@ -109,8 +109,8 @@ def RemoveProducoesUnitarias(gramatica):
         for prod in producoes[:]:
             if prod in gramatica.variaveis:
                 gramatica.regras[simbolo].remove(prod)
-    # Inclui as producoes do Fecho Transitivo nas variaveis da gramatica
 
+    # Inclui as producoes do Fecho Transitivo nas variaveis da gramatica
     for  simb,prod  in fecho_transitivo.items():
         if len(prod) > 0:
             for v in prod:

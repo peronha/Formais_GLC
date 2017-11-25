@@ -84,3 +84,10 @@ class Gramatica:
                         break
 
         return conjuntoProducoesVazias
+
+    # Retorna todas as variáveis que geram algum terminal
+    def ProducoesTerminais(self):
+        variaveis = []
+
+
+        return variaveis

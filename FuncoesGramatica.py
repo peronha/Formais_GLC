@@ -41,24 +41,91 @@ def carregaGramatica(nomeArq):
             if escreve_terminais :
                matchObj  = re.match(r'\[ (\w) \]', dado, re.I|re.M)
                if matchObj:
-                gramatica.adicionaTerminais(matchObj.group(1))
+                gramatica.adicionaTerminais(matchObj.group(1).strip())
 
             if escreve_variaveis :
                 matchObj = re.match(r'\[ (\w) \]', dado, re.I | re.M)
                 if matchObj:
-                    gramatica.adicionaVariavel(matchObj.group(1))
+                    gramatica.adicionaVariavel(matchObj.group(1).strip())
 
             if escreve_regras :
                 matchObj = re.findall(r'\[ (\w) \]', dado, re.I | re.M)
                 if matchObj:
-                    gramatica.adicionaRegra(matchObj[0], "".join(matchObj[1:]))
+                    gramatica.adicionaRegra(matchObj[0], "".join(matchObj[1:]).strip())
 
             if escreve_inicial :
                 matchObj = re.match(r'\[ (\w) \]', dado, re.I | re.M)
                 if matchObj:
-                    gramatica.defineInicial(matchObj.group(1))
+                    gramatica.defineInicial(matchObj.group(1).strip())
 
 
             #print(dado)
+
+    return gramatica
+
+
+def RemoveProducoesVazias(gramatica):
+
+    # Gera conjunto das variáveis que produzem direta ou indiretamente a palavra vazia.
+    conjuntoProducoesVazias = gramatica.ProducoesVazias('V')
+
+    # Impressão das regras na tela antes de qualquer mudança.
+    #print(gramatica.regras)
+
+    # Exclui as produções vazias (diretas).
+    for cabeca in gramatica.regras:
+        for producao in gramatica.regras[cabeca]:
+            if 'V' in producao:
+                gramatica.regras[cabeca].remove(producao)
+                break
+
+    # Gera produções adicionais sem variáveis que produzem a palavra vazia.
+    # AINDA FALTA TRATAR OS CASOS DO TIPO EM QUE "ASA" GERA NOVAS PRODUÇÕES "SA", "AS" e "S".
+    # Com a implementação atual "ASA" está gerando somente produções "S".
+    novasProducoes = {}
+    for cabeca in gramatica.regras:
+        novasProducoes[cabeca] = []
+        for producao in gramatica.regras[cabeca]:
+            for variavel in conjuntoProducoesVazias:
+                if variavel in producao and len(producao) > 1:
+                    novasProducoes[cabeca].append(producao.replace(variavel, ''))
+    for cabeca in gramatica.regras:
+        if cabeca in novasProducoes and len(novasProducoes[cabeca]) > 0:
+            for novaProducao in novasProducoes[cabeca]:
+                gramatica.regras[cabeca].append(novaProducao)
+
+    #print(gramatica.regras)
+
+    return gramatica
+
+# Remove todas as produções do Tipo A -> V
+def RemoveProducoesUnitarias(gramatica):
+
+    fecho_transitivo = gramatica.FechoTransitivo()
+    #print(gramatica.variaveis)
+
+    # exclui as producoes de simbolos
+    for simbolo,producoes in gramatica.regras.items():
+        for prod in producoes[:]:
+            if prod in gramatica.variaveis:
+                gramatica.regras[simbolo].remove(prod)
+    # Inclui as producoes do Fecho Transitivo nas variaveis da gramatica
+
+    for  simb,prod  in fecho_transitivo.items():
+        if len(prod) > 0:
+            for v in prod:
+                for v_prod in gramatica.regras[v]:
+                    if v_prod not in gramatica.regras[simb]:
+                        gramatica.regras[simb].append(v_prod)
+
+    return gramatica
+
+
+def RemoveSimbolosInuteis(gramatica):
+
+    return gramatica
+
+
+def FormaNormalChomsky(gramatica):
 
     return gramatica

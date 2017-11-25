@@ -37,3 +37,50 @@ class Gramatica:
         print(self.inicial)
         print("REGRAS: ")
         print(self.regras)
+
+    # Funcao que dado um simbolo retorna o fecho deste simbolo
+    def FechoTransitivoSimbolo(self, simbolo, simbolos_percorridos):
+
+        fecho = []
+
+        if simbolo in self.regras :
+            for producao in self.regras[simbolo]:
+                if producao in self.variaveis and producao != simbolo and producao not in simbolos_percorridos:
+                    fecho.append(producao)
+                    simbolos_percorridos.append(producao)
+                    fecho_producao = self.FechoTransitivoSimbolo(producao, simbolos_percorridos)
+                    for prod in fecho_producao:
+                        if prod not in fecho:
+                            fecho.append(prod)
+
+        return fecho
+
+    # Funcao que retorna o fecho transitivo de todas as variáveis da gramática
+    def FechoTransitivo(self):
+        fecho = {}
+
+        for var in self.variaveis:
+            simbolos_percorridos = []
+            simbolos_percorridos.append(var)
+            fecho[var] = self.FechoTransitivoSimbolo(var, simbolos_percorridos)
+
+
+        return fecho
+
+    # Função que retorna um array com as variáveis que possuem pelo menos uma produção vazia direta ou indiretamente.
+    def ProducoesVazias(self, simbolo):
+        conjuntoProducoesVazias = []
+        for cabeca in self.regras:
+            for producao in self.regras[cabeca]:
+                if simbolo in producao:
+                    conjuntoProducoesVazias.append(cabeca)
+                    break
+
+        for cabeca in self.regras:
+            for producao in self.regras[cabeca]:
+                for variavel in conjuntoProducoesVazias:
+                    if variavel in producao and cabeca not in conjuntoProducoesVazias:
+                        conjuntoProducoesVazias.append(cabeca)
+                        break
+
+        return conjuntoProducoesVazias

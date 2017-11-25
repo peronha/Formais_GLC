@@ -67,7 +67,7 @@ def carregaGramatica(nomeArq):
 def RemoveProducoesVazias(gramatica):
 
     # Gera conjunto das variáveis que produzem direta ou indiretamente a palavra vazia.
-    conjuntoProducoesVazias = gramatica.ProducoesVazias('V')
+    conjuntoProducoesVazias = gramatica.ProducoesVazias()
 
     # Impressão das regras na tela antes de qualquer mudança.
     #print(gramatica.regras)
@@ -89,6 +89,7 @@ def RemoveProducoesVazias(gramatica):
             for variavel in conjuntoProducoesVazias:
                 if variavel in producao and len(producao) > 1:
                     novasProducoes[cabeca].append(producao.replace(variavel, ''))
+
     for cabeca in gramatica.regras:
         if cabeca in novasProducoes and len(novasProducoes[cabeca]) > 0:
             for novaProducao in novasProducoes[cabeca]:
@@ -109,8 +110,8 @@ def RemoveProducoesUnitarias(gramatica):
         for prod in producoes[:]:
             if prod in gramatica.variaveis:
                 gramatica.regras[simbolo].remove(prod)
-
     # Inclui as producoes do Fecho Transitivo nas variaveis da gramatica
+
     for  simb,prod  in fecho_transitivo.items():
         if len(prod) > 0:
             for v in prod:
@@ -120,36 +121,38 @@ def RemoveProducoesUnitarias(gramatica):
 
     return gramatica
 
-
+# Remove os símbolos não atingíveis e símbolos não geradores.
 def RemoveSimbolosInuteis(gramatica):
+
+    # Remoção dos símbolos não geradores.
+    for simbolo in gramatica.variaveis:
+        if simbolo in gramatica.regras:
+            if len(gramatica.regras[simbolo]) == 0:
+                del gramatica.regras[simbolo]
+
+    # Indica o status utilizando 0 para "Não atingível" ou 1 para "Atingível".
+    simbolosStatus = {}
+
+    # Busca quais são os símbolos não atingíveis.
+    for simbolo in gramatica.variaveis:
+        simbolosStatus[simbolo] = 0
+        for cabeca in gramatica.regras:
+            for producao in gramatica.regras[cabeca]:
+                if simbolo in producao:
+                    simbolosStatus[simbolo] = 1
+                if simbolosStatus[simbolo] == 1:
+                    break
+            if simbolosStatus[simbolo] == 1:
+                break
+
+    # Remove os símbolos não atingíveis, com exceção do inicial.
+    for simbolo in simbolosStatus:
+        if simbolo in gramatica.regras and simbolo != gramatica.inicial and simbolosStatus[simbolo] == 0:
+            del gramatica.regras[simbolo]
 
     return gramatica
 
 
 def FormaNormalChomsky(gramatica):
-    gramatica = RemoveProducoesVazias(gramatica)
-    gramatica = RemoveProducoesUnitarias(gramatica)
-    gramatica = RemoveSimbolosInuteis(gramatica)
-
-    # Lista das novas variaveis que geram apenas um terminal no formato terminal => variavel
-    novas_variaveis_terminais = {}
-
-    for simbolo, producoes in gramatica.regras.items():
-        for prod in producoes:
-            if len(prod) > 1:
-                for c in prod:
-                    if c in gramatica.terminais:
-                        if c not in novas_variaveis_terminais:
-                            novas_variaveis_terminais[c] = 'G_' + c
-                        gramatica.regras[simbolo][gramatica.regras[simbolo].index(prod)] = prod.replace(c, novas_variaveis_terminais[c])
-
-    # Adiciona as novas variaveis e regras na gramatica
-    for terminal,variavel in novas_variaveis_terminais.items():
-        add_var = variavel
-        gramatica.adicionaVariavel(add_var)
-        gramatica.adicionaRegra(add_var, terminal)
-
-
-
 
     return gramatica

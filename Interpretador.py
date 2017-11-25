@@ -10,8 +10,8 @@ def main():
     gramatica = carregaGramatica('exemplo-gramatica.txt')
 
     # Mostra os dados da gramática na tela.
-    #print("\nGramática inicial:")
-    #gramatica.mostraGramatica()
+    print("\nGramática inicial:")
+    gramatica.mostraGramatica()
 
     # Remoção de produções vazias.
     gramatica = RemoveProducoesVazias(gramatica)
@@ -20,18 +20,14 @@ def main():
     gramatica = RemoveProducoesUnitarias(gramatica)
 
     # Remoção de símbolos inúteis.
-    #gramatica = RemoveSimbolosInuteis(gramatica)
-
+    gramatica = RemoveSimbolosInuteis(gramatica)
 
     # Transformação para a Forma Normal de Chomsky.
     #gramatica = FormaNormalChomsky(gramatica)
 
     # Mostra os dados da gramática na tela.
-    #print("\n\nGramática após alterações:")
-    #gramatica.mostraGramatica()
-
-
-    gramatica = FormaNormalChomsky(gramatica)
+    print("\n\nGramática após alterações:")
+    gramatica.mostraGramatica()
 
     return
 

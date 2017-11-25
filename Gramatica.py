@@ -68,11 +68,11 @@ class Gramatica:
         return fecho
 
     # Função que retorna um array com as variáveis que possuem pelo menos uma produção vazia direta ou indiretamente.
-    def ProducoesVazias(self, simbolo):
+    def ProducoesVazias(self):
         conjuntoProducoesVazias = []
         for cabeca in self.regras:
             for producao in self.regras[cabeca]:
-                if simbolo in producao:
+                if 'V' in producao:
                     conjuntoProducoesVazias.append(cabeca)
                     break
 
@@ -84,23 +84,3 @@ class Gramatica:
                         break
 
         return conjuntoProducoesVazias
-
-    # Verifica se existe uma producao de uma Variavel para um terminal
-    def ExisteProducaoTerminal(self, terminal):
-        for simbolo,prod in self.regras.items():
-            if len(prod) == 1:
-                if prod[0] == terminal:
-                    return simbolo
-
-        return None
-
-    def TamanhoRealProducao(self, prod):
-
-        return 1
-
-    # Retorna todas as variáveis que geram algum terminal
-    def ProducoesTerminais(self):
-        variaveis = []
-
-
-        return variaveis

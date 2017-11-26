@@ -180,6 +180,7 @@ def FormaNormalChomsky(gramatica):
 
     novas_variaveis_producoes = {}
     i=0
+    #TODO testar mais casos e verificar direito esta porcaria
     for simbolo, producoes in gramatica.regras.items():
         for idx, prod in enumerate(producoes):
             simbolos_prod = gramatica.SimbolosProducao(prod)

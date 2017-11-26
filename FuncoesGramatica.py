@@ -121,7 +121,34 @@ def RemoveProducoesUnitarias(gramatica):
     return gramatica
 
 
+# Remove os símbolos não atingíveis e símbolos não geradores.
 def RemoveSimbolosInuteis(gramatica):
+
+    # Remoção dos símbolos não geradores.
+    for simbolo in gramatica.variaveis:
+        if simbolo in gramatica.regras:
+            if len(gramatica.regras[simbolo]) == 0:
+                del gramatica.regras[simbolo]
+
+    # Indica o status utilizando 0 para "Não atingível" ou 1 para "Atingível".
+    simbolosStatus = {}
+
+    # Busca quais são os símbolos não atingíveis.
+    for simbolo in gramatica.variaveis:
+        simbolosStatus[simbolo] = 0
+        for cabeca in gramatica.regras:
+            for producao in gramatica.regras[cabeca]:
+                if simbolo in producao:
+                    simbolosStatus[simbolo] = 1
+                if simbolosStatus[simbolo] == 1:
+                    break
+            if simbolosStatus[simbolo] == 1:
+                break
+
+    # Remove os símbolos não atingíveis, com exceção do inicial.
+    for simbolo in simbolosStatus:
+        if simbolo in gramatica.regras and simbolo != gramatica.inicial and simbolosStatus[simbolo] == 0:
+            del gramatica.regras[simbolo]
 
     return gramatica
 
@@ -136,12 +163,14 @@ def FormaNormalChomsky(gramatica):
 
     for simbolo, producoes in gramatica.regras.items():
         for prod in producoes:
-            if len(prod) > 1:
-                for c in prod:
+            simbolos_prod = gramatica.SimbolosProducao(prod)
+            if len(simbolos_prod) > 1:
+                for idx,c in enumerate(simbolos_prod):
                     if c in gramatica.terminais:
                         if c not in novas_variaveis_terminais:
                             novas_variaveis_terminais[c] = 'G_' + c
-                        gramatica.regras[simbolo][gramatica.regras[simbolo].index(prod)] = prod.replace(c, novas_variaveis_terminais[c])
+                        simbolos_prod[idx] = novas_variaveis_terminais[c]
+                        gramatica.regras[simbolo][gramatica.regras[simbolo].index(prod)] = "".join(simbolos_prod)
 
     # Adiciona as novas variaveis e regras na gramatica
     for terminal,variavel in novas_variaveis_terminais.items():
@@ -149,7 +178,33 @@ def FormaNormalChomsky(gramatica):
         gramatica.adicionaVariavel(add_var)
         gramatica.adicionaRegra(add_var, terminal)
 
+    novas_variaveis_producoes = {}
+    i=0
+    for simbolo, producoes in gramatica.regras.items():
+        for idx, prod in enumerate(producoes):
+            simbolos_prod = gramatica.SimbolosProducao(prod)
+            if(len(simbolos_prod) > 2):
+                while (len(simbolos_prod) > 2):
+                    reversa = list(reversed(simbolos_prod))
+                    ultimo_char = reversa[-1]
+                    penultimo_char = reversa[-2]
+                    producao_nova = penultimo_char + ultimo_char
+                    if producao_nova not in novas_variaveis_producoes:
+                        nova_producao = 'D' + str(i)
+                        i+=1
+                        novas_variaveis_producoes[producao_nova] = nova_producao
+                    simbolos_prod.pop()
+                    simbolos_prod.pop()
+                    simbolos_prod.append(novas_variaveis_producoes[producao_nova])
+                producao_substituir = "".join(simbolos_prod)
+                gramatica.regras[simbolo][idx] = producao_substituir
 
+    #print(novas_variaveis_producoes)
+    # Adiciona as novas variaveis e regras na gramatica
+    for producao,variavel in novas_variaveis_producoes.items():
+        add_var = variavel
+        gramatica.adicionaVariavel(add_var)
+        gramatica.adicionaRegra(add_var, producao)
 
-
+    print(gramatica.regras)
     return gramatica

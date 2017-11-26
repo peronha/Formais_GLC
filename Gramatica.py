@@ -1,4 +1,5 @@
 import types
+import re
 
 class Gramatica:
 
@@ -93,6 +94,14 @@ class Gramatica:
                     return simbolo
 
         return None
+
+    #dada uma produçao retorna os seus simbolos
+    def SimbolosProducao(self, prod):
+        simbolos = []
+        matchObj = re.findall(r'[A-Z]_[a-z]|[A-Z][0-9]+|[A-Z]', prod, re.I | re.M)
+
+        return matchObj
+
 
     def TamanhoRealProducao(self, prod):
 

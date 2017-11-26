@@ -14,24 +14,21 @@ def main():
     #gramatica.mostraGramatica()
 
     # Remoção de produções vazias.
-    gramatica = RemoveProducoesVazias(gramatica)
+    #gramatica = RemoveProducoesVazias(gramatica)
 
     # Remoção de produções unitárias.
-    gramatica = RemoveProducoesUnitarias(gramatica)
+    #gramatica = RemoveProducoesUnitarias(gramatica)
 
     # Remoção de símbolos inúteis.
     #gramatica = RemoveSimbolosInuteis(gramatica)
 
-
     # Transformação para a Forma Normal de Chomsky.
-    #gramatica = FormaNormalChomsky(gramatica)
+    gramatica = FormaNormalChomsky(gramatica)
+
+    gramatica.mostraGramatica()
 
     # Mostra os dados da gramática na tela.
-    #print("\n\nGramática após alterações:")
-    #gramatica.mostraGramatica()
-
-
-    gramatica = FormaNormalChomsky(gramatica)
+    #print("\n\nRegras após alterações: " + str(gramatica.regras))
 
     return
 

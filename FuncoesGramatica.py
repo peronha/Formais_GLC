@@ -215,3 +215,9 @@ def FormaNormalChomsky(gramatica):
     print("\nGramática na Forma Normal de Chomsky: \n")
     gramatica.mostraGramatica()
     return gramatica
+
+
+def reconhecEarly(gramatica):
+
+
+    return 0

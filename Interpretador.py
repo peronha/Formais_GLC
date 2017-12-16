@@ -3,11 +3,11 @@ from FuncoesGramatica import *
 # Classe main que determina o fluxo principal do programa.
 def main():
 
-    nomeArq = input("Entre com o nome do arquivo: ")
+    #nomeArq = input("Entre com o nome do arquivo: ")
 
     # Carrega a gramática do arquivo de texto.
-    gramatica = carregaGramatica(nomeArq)
-    #gramatica = carregaGramatica('exemplo-gramatica.txt')
+    #gramatica = carregaGramatica(nomeArq)
+    gramatica = carregaGramatica('exemplo-gramatica.txt')
 
     # Mostra os dados da gramática na tela.
     print("\nGramática inicial:")
@@ -28,7 +28,7 @@ def main():
     #gramatica.mostraGramatica()
 
     # Mostra os dados da gramática na tela.
-    #print("\n\nRegras após alterações: " + str(gramatica.regras))
+    print("\n\nRegras após alterações: " + str(gramatica.regras))
 
     return
 

@@ -2,6 +2,7 @@
 [ a ]
 [ b ]
 [ d ]
+[ c ]
 #Variaveis
 [ S ]
 [ A ]

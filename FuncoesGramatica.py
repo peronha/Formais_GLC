@@ -152,16 +152,24 @@ def RemoveSimbolosInuteis(gramatica):
             del gramatica.regras[simbolo]
 
     return gramatica
+def substituiSimbolos(simbolos,antigo, novo):
 
+    for idx, c, in enumerate(simbolos):
+        if c == antigo:
+            simbolos[idx] = novo
+
+    return simbolos
 def FormaNormalChomsky(gramatica):
     gramatica = RemoveProducoesVazias(gramatica)
-    print("\nRegras da gramática após remoção de palavras vazias: \n" + str(gramatica.regras))
+    #print("\nRegras da gramática após remoção de palavras vazias: \n" + str(gramatica.regras))
 
     gramatica = RemoveProducoesUnitarias(gramatica)
-    print("\nRegras da gramática após remoção de produções unitárias: \n" + str(gramatica.regras))
+    #print("\nRegras da gramática após remoção de produções unitárias: \n" + str(gramatica.regras))
 
     gramatica = RemoveSimbolosInuteis(gramatica)
-    print("\nRegras da gramática após remoção de símbolos inúteis: \n" + str(gramatica.regras))
+    #print("\nRegras da gramática após remoção de símbolos inúteis: \n" + str(gramatica.regras))
+
+    print(gramatica.terminais)
 
     # Lista das novas variaveis que geram apenas um terminal no formato terminal => variavel
     novas_variaveis_terminais = {}
@@ -174,8 +182,9 @@ def FormaNormalChomsky(gramatica):
                     if c in gramatica.terminais:
                         if c not in novas_variaveis_terminais:
                             novas_variaveis_terminais[c] = 'G_' + c
-                        simbolos_prod[idx] = novas_variaveis_terminais[c]
+                        simbolos_prod = substituiSimbolos(simbolos_prod, c, novas_variaveis_terminais[c])
                         gramatica.regras[simbolo][gramatica.regras[simbolo].index(prod)] = "".join(simbolos_prod)
+                        prod = "".join(simbolos_prod)
 
     # Adiciona as novas variaveis e regras na gramatica
     for terminal,variavel in novas_variaveis_terminais.items():
@@ -191,9 +200,10 @@ def FormaNormalChomsky(gramatica):
             simbolos_prod = gramatica.SimbolosProducao(prod)
             if(len(simbolos_prod) > 2):
                 while (len(simbolos_prod) > 2):
-                    reversa = list(reversed(simbolos_prod))
-                    ultimo_char = reversa[-1]
-                    penultimo_char = reversa[-2]
+                    #reversa = list(reversed(simbolos_prod))
+                    #print(reversa)
+                    ultimo_char = simbolos_prod[-1]
+                    penultimo_char = simbolos_prod[-2]
                     producao_nova = penultimo_char + ultimo_char
                     if producao_nova not in novas_variaveis_producoes:
                         nova_producao = 'D' + str(i)
@@ -212,11 +222,29 @@ def FormaNormalChomsky(gramatica):
         gramatica.adicionaVariavel(add_var)
         gramatica.adicionaRegra(add_var, producao)
 
-    print("\nGramática na Forma Normal de Chomsky: \n")
-    gramatica.mostraGramatica()
+    #print("\nGramática na Forma Normal de Chomsky: \n")
+    #gramatica.mostraGramatica()
     return gramatica
 
-def reconhecEarly(gramatica):
-
+#S → NP VP NP → NP PP
+#PP → P NP NP → N
+#VP → V NP N → astronomers
+#VP → VP PP N → ears
+#P → with N → stars
+#V → saw N → telescopes
+#Earley is not picky about what type of grammar it accepts :)
+def EarleyInTheMorning(gramatica, palavra):
+    produzConjInicial(gramatica)
 
     return 0
+
+def verificaRegras(var):
+    return
+
+def produzConjInicial(gramatica):
+    gramatica.regras
+    chart = {}
+    chart[0] = gramatica.regras['S']
+    continua = 1
+
+    print(chart)

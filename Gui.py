@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter import font
+import math
 
 class Gui:
 
@@ -12,17 +13,18 @@ class Gui:
     def Sobre(self):
         print("Olá a todos!")
 
-    def  __init__(self):
-
+    def  __init__(self, tam_x, tam_y):
+        self.tamx = tam_x
+        self.tamy = tam_y
         self.gui = Tk()
         self.gui.winfo_toplevel().title("Parser de Gramaticas")
-        self.gui.minsize(width=650, height=550)
+        self.gui.minsize(width=tam_x, height=tam_y)
         self.gui.configure(background="white")
 
         self.criaMenu()
         self.criaForm()
-        self.criaCanvas()
-
+        self.canvas = self.criaCanvas()
+        self.desenhaArvore(0)
         mainloop()
 
     def criaForm(self):
@@ -55,14 +57,10 @@ class Gui:
         print("click click")
 
     def criaCanvas(self):
-        w = Canvas(self.gui)
-        w.pack(fill='x')
+        c = Canvas(self.gui,  height='500')
+        c.pack(fill='x')
 
-        w.create_line(0, 0, 200, 100)
-        w.create_line(0, 100, 200, 0, fill="red", dash=(4, 4))
-
-        w.create_rectangle(50, 25, 150, 75, fill="blue")
-
+        return c
 
     def criaMenu(self):
 
@@ -78,11 +76,86 @@ class Gui:
         menu.add_cascade(label="Ajuda", menu=helpmenu)
         helpmenu.add_command(label="Sobre...", command=self.Sobre)
 
-    def desenhaArovre(self,arv):
+
+    def desenhaGalhoDir(self, x, y, tam):
+        angulo = math.pi/3
+
+        x1 = x + int(math.cos(angulo) * tam)
+        y1 = y + int(math.sin(angulo) * tam) + 15
+        #print(x1)
+        #print(y1)
+        # Draw the line
+        self.canvas.create_line(x-2, y , x1, y1, tags="line")
+
+
+    def desenhaGalhoEsq(self, x, y, tam):
+        angulo = math.pi/3
+
+        x1 = x - int(math.sin(angulo) * tam)
+        y1 = y + int(math.cos(angulo) * tam) + 19
+        self.canvas.create_line(x, y  , x1  , y1, tags="line")
+
+
+    def desenhaNodoDir(self, simbolo,x ,y, prof):
+        x = x +  20 * prof
+        y = y + 50 * prof
+        #Verificar se é terminal
+        if simbolo == 'a':
+            self.canvas.create_oval(x,y,x-20, y-20, fill='red')
+            self.canvas.create_text(x-11, y-10, fill="white", font="Playbill 12 italic bold",
+                                    text="a")
+        else:
+            self.canvas.create_oval(x,y,x-20, y-20, fill='green')
+            self.canvas.create_text(x-11, y-10, fill="white", font="Playbill 12 italic bold",
+                                    text="B")
+
+
+    def desenhaNodoEsq(self, simbolo, x, y, prof):
+
+        x = x - 24 * prof
+        y = y + 50 * prof
+        if simbolo == 'a':
+            self.canvas.create_oval(x,y,x-20, y-20, fill='red')
+            self.canvas.create_text(x-11, y-10, fill="white", font="Playbill 12 italic bold",
+                                    text="a")
+        else:
+            self.canvas.create_oval(x,y,x-20, y-20, fill='green')
+            self.canvas.create_text(x-11, y-10, fill="white", font="Playbill 12 italic bold",
+                                    text="B")
+
+    def desenhaArvore(self,arv):
+        meio = self.tamx/2
+        altura = 40
+        #Desenha Simbolo Inicial
+        self.canvas.create_oval(meio,altura,meio-20, altura-20, fill='green')
+        self.canvas.create_text(meio-11, altura-10, fill="white", font="Playbill 12 italic bold",
+                                text="S")
+
+        self.desenhaGalhoEsq(meio-20, altura , 15)
+        self.desenhaGalhoDir(meio, altura, 15)
+
+        self.desenhaNodoEsq('a', meio, altura, 1)
+        self.desenhaNodoDir('B', meio, altura, 1)
+
+        #profundidade = 2
+        self.desenhaNodoEsq('a', meio, altura + 20, 2)
+        self.desenhaNodoDir('B', meio , altura + 20, 2)
+
+        self.desenhaNodoEsq('a', meio + ( 20 *2) , altura + 20, 2)
+        self.desenhaNodoDir('B', meio - (14 * 2), altura + 20, 2)
+
+        self.desenhaNodoEsq('a', meio, altura + 20, 2)
+        self.desenhaNodoDir('B', meio , altura + 20, 2)
+
+        self.desenhaNodoEsq('a', meio + ( 20 *2) , altura + 20, 2)
+        self.desenhaNodoDir('B', meio - (14 * 2), altura + 20, 2)
+
+
+
         return
     def imprimeResultado(self,resultado):
         return
 
-If = Gui()
+If = Gui(650, 500)
 
 

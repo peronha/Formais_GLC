@@ -7,30 +7,30 @@ def main():
 
     # Carrega a gramática do arquivo de texto.
     #gramatica = carregaGramatica(nomeArq)
-    gramatica = carregaGramatica('teste2.txt')
+    gramatica = carregaGramatica('teste4.txt')
 
     # Mostra os dados da gramática na tela.
     #print("\nGramática inicial:")
     #gramatica.mostraGramatica()
-    print("\n\nRegras iniciais: " + str(gramatica.regras))
+    #print("\n\nRegras iniciais: " + str(gramatica.regras))
 
     # Remoção de produções vazias.
-    gramatica = RemoveProducoesVazias(gramatica)
+    #gramatica = RemoveProducoesVazias(gramatica)
 
     # Remoção de produções unitárias.
-    gramatica = RemoveProducoesUnitarias(gramatica)
+    #gramatica = RemoveProducoesUnitarias(gramatica)
 
     # Remoção de símbolos inúteis.
-    gramatica = RemoveSimbolosInuteis(gramatica)
+    #gramatica = RemoveSimbolosInuteis(gramatica)
 
     # Transformação para a Forma Normal de Chomsky.
-    #gramatica = FormaNormalChomsky(gramatica)
+    gramatica = FormaNormalChomsky(gramatica)
 
     #gramatica.mostraGramatica()
 
     # Mostra os dados da gramática na tela.
-    print("\n\nRegras após alterações: " + str(gramatica.regras))
-
+    #print("\n\nRegras após alterações: " + str(gramatica.regras))
+    EarleyInTheMorning(gramatica, 'aab')
     return
 
 main()

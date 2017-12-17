@@ -80,7 +80,7 @@ class Gramatica:
         for cabeca in self.regras:
             for producao in self.regras[cabeca]:
                 for variavel in conjuntoProducoesVazias:
-                    if variavel in producao and cabeca not in conjuntoProducoesVazias:
+                    if variavel == producao and cabeca not in conjuntoProducoesVazias:
                         conjuntoProducoesVazias.append(cabeca)
                         break
 
@@ -102,7 +102,6 @@ class Gramatica:
 
         return matchObj
 
-
     def TamanhoRealProducao(self, prod):
 
         return 1
@@ -113,3 +112,23 @@ class Gramatica:
 
 
         return variaveis
+
+    # Retorna uma lista com todos os símbolos atingíveis.
+    def SimbolosAtingiveis(self):
+        simbolosAtingiveis = []
+        simbolosAtingiveis.append(self.inicial)
+        for simbolo in self.variaveis:
+            for cabeca, producoes in self.regras.items():
+                for producao in producoes:
+                    if (simbolo in producao) and (simbolo not in simbolosAtingiveis):
+                        simbolosAtingiveis.append(simbolo)
+        return simbolosAtingiveis
+
+    # Retorna uma lista com todos os símbolos geradores.
+    def SimbolosGeradores(self):
+        simbolosGeradores = []
+        for simbolo in self.variaveis:
+            if simbolo in self.regras:
+                if len(self.regras[simbolo]) > 0:
+                    simbolosGeradores.append(simbolo)
+        return simbolosGeradores

@@ -63,46 +63,51 @@ def carregaGramatica(nomeArq):
 
     return gramatica
 
-
+# Remove as produções vazias e adiciona produções para compensar.
 def RemoveProducoesVazias(gramatica):
-
     # Gera conjunto das variáveis que produzem direta ou indiretamente a palavra vazia.
     conjuntoProducoesVazias = gramatica.ProducoesVazias('V')
 
-    # Impressão das regras na tela antes de qualquer mudança.
-    #print(gramatica.regras)
+    # Exclui as produções diretamente vazias e adiciona as produções que compensam.
+    if len(conjuntoProducoesVazias) > 0:
+        novasProducoes = {}
+        for cabeca in gramatica.regras:
+            novasProducoes[cabeca] = []
+            for producao in gramatica.regras[cabeca]:
+                for simbolo in conjuntoProducoesVazias:
+                    if (len(producao) > 1) and (simbolo in producao):
+                        # Identifica quais os índices da string que possuem o símbolo procurado.
+                        indicesVazios = [pos for pos, char in enumerate(producao) if char in conjuntoProducoesVazias]
+                        # Indica quantas vezes o símbolo aparece dentro da string.
+                        numeroSimbolosVazios = len(indicesVazios)
+                        for contador in range(0, 2**numeroSimbolosVazios - 1):
+                            # Correção da string que representa o número binário.
+                            contadorBinario = bin(contador).replace("0b", "")
+                            for diferencaTamanho in range(0, numeroSimbolosVazios - len(contadorBinario)):
+                                contadorBinario = contadorBinario.replace(contadorBinario, "0" + contadorBinario)
+                            # Para cada zero do número binário o símbolo será apagado na nova produção no local indicado.
+                            novaProducao = producao
+                            for indiceBinario in range(len(contadorBinario) - 1, -1, -1):
+                                if contadorBinario[indiceBinario] == "0":
+                                    # Apaga o símbolo no local correspondente com a variável indicesVazios.
+                                    novaProducao = novaProducao[:indicesVazios[indiceBinario]] + novaProducao[indicesVazios[indiceBinario]+1:]
+                            # Só adiciona a produção caso ela ainda não exista.
+                            if (novaProducao not in novasProducoes[cabeca]) and (novaProducao != ""):
+                                novasProducoes[cabeca].append(novaProducao)
+                if 'V' == producao:
+                    gramatica.regras[cabeca].remove(producao)
 
-    # Exclui as produções vazias (diretas).
-    for cabeca in gramatica.regras:
-        for producao in gramatica.regras[cabeca]:
-            if 'V' in producao:
-                gramatica.regras[cabeca].remove(producao)
-                break
-
-    # Gera produções adicionais sem variáveis que produzem a palavra vazia.
-    # AINDA FALTA TRATAR OS CASOS DO TIPO EM QUE "ASA" GERA NOVAS PRODUÇÕES "SA", "AS" e "S".
-    # Com a implementação atual "ASA" está gerando somente produções "S".
-    novasProducoes = {}
-    for cabeca in gramatica.regras:
-        novasProducoes[cabeca] = []
-        for producao in gramatica.regras[cabeca]:
-            for variavel in conjuntoProducoesVazias:
-                if variavel in producao and len(producao) > 1:
-                    novasProducoes[cabeca].append(producao.replace(variavel, ''))
-    for cabeca in gramatica.regras:
-        if cabeca in novasProducoes and len(novasProducoes[cabeca]) > 0:
-            for novaProducao in novasProducoes[cabeca]:
-                gramatica.regras[cabeca].append(novaProducao)
-
-    #print(gramatica.regras)
+        for cabeca in gramatica.regras:
+            if cabeca in novasProducoes and len(novasProducoes[cabeca]) > 0:
+                for novaProducao in novasProducoes[cabeca]:
+                    gramatica.regras[cabeca].append(novaProducao)
 
     return gramatica
 
-# Remove todas as produções do Tipo A -> V
+# Remove todas as produções do Tipo A -> B
 def RemoveProducoesUnitarias(gramatica):
 
     fecho_transitivo = gramatica.FechoTransitivo()
-    #print(gramatica.variaveis)
 
     # exclui as producoes de simbolos
     for simbolo,producoes in gramatica.regras.items():
@@ -114,44 +119,39 @@ def RemoveProducoesUnitarias(gramatica):
     for  simb,prod  in fecho_transitivo.items():
         if len(prod) > 0:
             for v in prod:
-                for v_prod in gramatica.regras[v]:
-                    if v_prod not in gramatica.regras[simb]:
-                        gramatica.regras[simb].append(v_prod)
+                if v in gramatica.regras:
+                    for v_prod in gramatica.regras[v]:
+                        if v_prod not in gramatica.regras[simb]:
+                            gramatica.regras[simb].append(v_prod)
 
     return gramatica
-
 
 # Remove os símbolos não atingíveis e símbolos não geradores.
 def RemoveSimbolosInuteis(gramatica):
 
-    # Remoção dos símbolos não geradores.
+    simbolosGeradores = gramatica.SimbolosGeradores()
+
+    # Remove símbolos não geradores.
+    producoesExcluidas = {}
     for simbolo in gramatica.variaveis:
-        if simbolo in gramatica.regras:
-            if len(gramatica.regras[simbolo]) == 0:
-                del gramatica.regras[simbolo]
+        producoesExcluidas[simbolo] = []
+        if simbolo not in simbolosGeradores:
+            for cabeca, producoes in gramatica.regras.items():
+                for producao in producoes:
+                    if simbolo in producao:
+                        producoesExcluidas[cabeca].append(producao)
+            for cabeca, producoesExcluidas in producoesExcluidas.items():
+                for producaoExcluida in producoesExcluidas:
+                    gramatica.regras[cabeca].remove(producaoExcluida)
 
-    # Indica o status utilizando 0 para "Não atingível" ou 1 para "Atingível".
-    simbolosStatus = {}
+    simbolosAtingiveis = gramatica.SimbolosAtingiveis()
 
-    # Busca quais são os símbolos não atingíveis.
+    # Remove símbolos não atingíveis.
     for simbolo in gramatica.variaveis:
-        simbolosStatus[simbolo] = 0
-        for cabeca in gramatica.regras:
-            for producao in gramatica.regras[cabeca]:
-                if simbolo in producao:
-                    simbolosStatus[simbolo] = 1
-                if simbolosStatus[simbolo] == 1:
-                    break
-            if simbolosStatus[simbolo] == 1:
-                break
-
-    # Remove os símbolos não atingíveis, com exceção do inicial.
-    for simbolo in simbolosStatus:
-        if simbolo in gramatica.regras and simbolo != gramatica.inicial and simbolosStatus[simbolo] == 0:
+        if (simbolo not in simbolosAtingiveis) and (simbolo in gramatica.regras):
             del gramatica.regras[simbolo]
 
     return gramatica
-
 
 def FormaNormalChomsky(gramatica):
     gramatica = RemoveProducoesVazias(gramatica)
@@ -215,7 +215,6 @@ def FormaNormalChomsky(gramatica):
     print("\nGramática na Forma Normal de Chomsky: \n")
     gramatica.mostraGramatica()
     return gramatica
-
 
 def reconhecEarly(gramatica):
 

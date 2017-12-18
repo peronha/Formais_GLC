@@ -1,5 +1,5 @@
 from FuncoesGramatica import *
-
+from FuncoesEarley import *
 # Classe main que determina o fluxo principal do programa.
 def main():
 

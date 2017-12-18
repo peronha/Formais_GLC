@@ -1,4 +1,5 @@
 from Gramatica import *
+from EarlyParsingNode import *
 import re
 
 def carregaGramatica(nomeArq):
@@ -225,26 +226,3 @@ def FormaNormalChomsky(gramatica):
     #print("\nGramática na Forma Normal de Chomsky: \n")
     #gramatica.mostraGramatica()
     return gramatica
-
-#S → NP VP NP → NP PP
-#PP → P NP NP → N
-#VP → V NP N → astronomers
-#VP → VP PP N → ears
-#P → with N → stars
-#V → saw N → telescopes
-#Earley is not picky about what type of grammar it accepts :)
-def EarleyInTheMorning(gramatica, palavra):
-    produzConjInicial(gramatica)
-
-    return 0
-
-def verificaRegras(var):
-    return
-
-def produzConjInicial(gramatica):
-    gramatica.regras
-    chart = {}
-    chart[0] = gramatica.regras['S']
-    continua = 1
-
-    print(chart)

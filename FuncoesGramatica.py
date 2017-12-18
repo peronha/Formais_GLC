@@ -169,7 +169,7 @@ def FormaNormalChomsky(gramatica):
     gramatica = RemoveSimbolosInuteis(gramatica)
     #print("\nRegras da gramática após remoção de símbolos inúteis: \n" + str(gramatica.regras))
 
-    print(gramatica.terminais)
+    #print(gramatica.terminais)
 
     # Lista das novas variaveis que geram apenas um terminal no formato terminal => variavel
     novas_variaveis_terminais = {}

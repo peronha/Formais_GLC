@@ -1,9 +1,8 @@
 from Gramatica import *
-from EarlyParsingNode import *
 import re
 
+# Carrega uma gramática a partir do arquivo de texto.
 def carregaGramatica(nomeArq):
-
     gramatica = Gramatica()
 
     escreve_terminais = 0
@@ -153,13 +152,16 @@ def RemoveSimbolosInuteis(gramatica):
             del gramatica.regras[simbolo]
 
     return gramatica
-def substituiSimbolos(simbolos,antigo, novo):
 
+# Substitui um símbolo de uma string.
+def SubstituiSimbolos(simbolos, antigo, novo):
     for idx, c, in enumerate(simbolos):
         if c == antigo:
             simbolos[idx] = novo
 
     return simbolos
+
+# Transforma uma gramática na Forma Normal de Chomsky.
 def FormaNormalChomsky(gramatica):
     gramatica = RemoveProducoesVazias(gramatica)
     #print("\nRegras da gramática após remoção de palavras vazias: \n" + str(gramatica.regras))
@@ -183,7 +185,7 @@ def FormaNormalChomsky(gramatica):
                     if c in gramatica.terminais:
                         if c not in novas_variaveis_terminais:
                             novas_variaveis_terminais[c] = 'G_' + c
-                        simbolos_prod = substituiSimbolos(simbolos_prod, c, novas_variaveis_terminais[c])
+                        simbolos_prod = SubstituiSimbolos(simbolos_prod, c, novas_variaveis_terminais[c])
                         gramatica.regras[simbolo][gramatica.regras[simbolo].index(prod)] = "".join(simbolos_prod)
                         prod = "".join(simbolos_prod)
 

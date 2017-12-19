@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter import font
-from Gramatica import *
 from BinarySearchTree import *
 from FuncoesGramatica import *
+from FuncoesEarley import *
 import math
 
 class Gui:
@@ -99,7 +99,11 @@ class Gui:
     # Executa o reconhecimento da palavra inserida.
     def ReconhecerPalavra(self):
         self.canvas.delete("all")
-        print("Você clicou em \"Reconhecer palavra\".")
+        if self.gramatica.inicial is None:
+            self.canvas.create_text(self.canvas.winfo_width() / 2, 30, fill="black", font="Helvetica 12 bold",
+                                    text="A gramática lida não é válida.")
+        else:
+            self.DesenhaProducoesEarley(EarleyInTheMorning(FormaNormalChomsky(self.gramatica), "a"))
 
     # Executa o reconhecimento da palavra inserida.
     def ImprimeGramatica(self):
@@ -240,6 +244,28 @@ class Gui:
                     linha = ""
                     contadorProducao += 1
                 contadorSimbolo += 1
+
+    # Apresenta os conjuntos de produções do algoritmo de Early.
+    def DesenhaProducoesEarley(self, charts):
+        posicaoX = self.canvas.winfo_width() / 2
+        posicaoY = 30
+        for indice_chart, chart in charts.items():
+            for variavel, producoes in chart.items():
+                for prod in producoes:
+                    # print(str(prod.pos_ponteiro))
+                    producao_string = ""
+                    i = 0
+                    # Prepara a variavel da producao
+                    for v in prod.producao:
+                        if prod.pos_ponteiro == i:
+                            producao_string = producao_string + "." + str(v)
+                        else:
+                            producao_string = producao_string + str(v)
+                        i += 1
+                    if len(prod.producao) == prod.pos_ponteiro:
+                        producao_string = producao_string + "."
+                    self.canvas.create_text(posicaoX, posicaoY, fill = "black", font = "Helvetica 12 bold", text = str(indice_chart) + " : " + variavel + " --> " + producao_string + "\\" + str(prod.nivel))
+                    posicaoY += 25
 
     # Cria uma árvore binária de derivação para testes.
     def CriaArvoreTeste(self):

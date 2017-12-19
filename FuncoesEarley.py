@@ -23,7 +23,7 @@ def imprimeProducoesEarley(charts):
 
 #Earley is not picky about what type of grammar it accepts :)
 def EarleyInTheMorning(gramatica, palavra):
-    #producoes iniciais partindo de S
+    # Producoes iniciais partindo de S.
     charts = {}
     charts[0] = converteDictEarly( produzProducoes(gramatica, 'S', 0)[0], 0, 0, gramatica)
     i = 1
@@ -46,9 +46,9 @@ def EarleyInTheMorning(gramatica, palavra):
                 producoesReduzidas(charts, i, gramatica)
                 i += 1
 
-    imprimeProducoesEarley(charts)
+    #imprimeProducoesEarley(charts)
 
-    return 0
+    return charts
 
 #Dada uma variavel procura em charts anteriores producoes que a geram
 def procuraVarCharts(variavel_reduzida, charts, r):
